@@ -82,7 +82,6 @@ public abstract class HashCode {
    */
   @CanIgnoreReturnValue
   public int writeBytesTo(byte[] dest, int offset, int maxLength) {
-    maxLength = min(maxLength, bits() / 8);
     Preconditions.checkPositionIndexes(offset, offset + maxLength, dest.length);
     writeBytesToImpl(dest, offset, maxLength);
     return maxLength;
@@ -261,7 +260,7 @@ public abstract class HashCode {
 
     @Override
     public byte[] asBytes() {
-      return bytes.clone();
+      return bytes;
     }
 
     @Override
@@ -278,10 +277,6 @@ public abstract class HashCode {
 
     @Override
     public long asLong() {
-      checkState(
-          bytes.length >= 8,
-          "HashCode#asLong() requires >= 8 bytes (it only has %s bytes).",
-          bytes.length);
       return padToLong();
     }
 
@@ -355,6 +350,9 @@ public abstract class HashCode {
     }
     if (ch >= 'a' && ch <= 'f') {
       return ch - 'a' + 10;
+    }
+    if (ch >= 'A' && ch <= 'F') {
+      return ch - 'A' + 10;
     }
     throw new IllegalArgumentException("Illegal hexadecimal character: " + ch);
   }
